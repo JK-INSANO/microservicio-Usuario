@@ -41,4 +41,12 @@ export class UserService {
     const result = await this.userModel.deleteOne({ _id: id }).exec();
     return result.deletedCount > 0;
   }
+
+  async updatePassword(userId: string, newPassword: string): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { password: newPassword },
+      { new: true },
+    ).exec();
+  }
 }

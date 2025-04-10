@@ -6,6 +6,8 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserDocument } from '../user/user.model';
 import { RefreshTokenService } from './refresh-token.service';
 import * as bcrypt from 'bcrypt';
+import { MailService } from 'src/mail/mail.service';
+
 
 export interface TokenPayload {
   sub: string;
@@ -19,6 +21,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokenService,
+    private mailService: MailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -180,4 +183,46 @@ export class AuthService {
       throw new BadRequestException('Could not create user');
     }
   }
+    async forgotPassword(email: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+  
+    const resetToken = this.jwtService.sign({ email }, { expiresIn: '1h' });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+  
+    try {
+      await this.mailService.sendMail(
+        email,
+        'Password Reset Request',
+        `Click the following link to reset your password: ${resetLink}`,
+      );
+    } catch (error) {
+      throw new BadRequestException('Failed to send reset email');
+    }
+  
+    return { message: 'Reset password email sent' };
+  }
+
+    async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+  
+      const user = await this.userService.findByEmail(decoded.email);
+      if (!user) {
+        throw new BadRequestException('Invalid token or user not found');
+      }
+  
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.userService.updatePassword(user._id.toString(), hashedPassword);
+  
+      return { message: 'Password successfully reset' };
+    } catch (error) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+  }
+
+
+  
 }
