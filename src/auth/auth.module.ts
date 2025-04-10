@@ -8,20 +8,20 @@ import { AuthController } from './auth.controller';
 import { RefreshTokenService } from './refresh-token.service';
 import { RefreshToken, RefreshTokenSchema } from './refresh-token.model';
 import { JwtStrategy } from './jwt.strategy';
-import { MailModule } from '../mail/mail.module'; // Importa MailModule
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     JwtModule.register({
-      secret: 'your-secret-key', // En producción, usa variables de entorno
-      signOptions: { expiresIn: '15m' }, // Expiración predeterminada para tokens de acceso
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
     MongooseModule.forFeature([
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
-    MailModule, // Agrega MailModule aquí
+    MailModule,
   ],
   providers: [AuthService, RefreshTokenService, JwtStrategy],
   controllers: [AuthController],
