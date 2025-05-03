@@ -31,6 +31,16 @@ export class User {
   @Prop()
   address: string;
 
+  // Campos específicos para tiendas
+  @Prop()
+  store_name: string;
+
+  @Prop()
+  store_address: string;
+
+  @Prop()
+  store_phone: string;
+
   @Prop({ required: true, enum: AccountType, default: AccountType.USUARIO })
   account_type: AccountType;
 }

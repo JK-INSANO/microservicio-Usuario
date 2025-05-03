@@ -3,10 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { LoginDto } from '../user/dto/login.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { UserDocument } from '../user/user.model';
+import { UserDocument, AccountType } from '../user/user.model';
 import { RefreshTokenService } from './refresh-token.service';
 import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
+import { determineUserType } from '../user/interfaces/user-types.interface';
 
 
 export interface TokenPayload {
@@ -136,6 +137,14 @@ export class AuthService {
     }
 
     try {
+      // Si no se proporciona un tipo de cuenta, determinarlo automáticamente
+      if (!createUserDto.account_type) {
+        createUserDto = {
+          ...createUserDto,
+          account_type: determineUserType(createUserDto)
+        };
+      }
+
       // Create the user
       const newUser = await this.userService.create(createUserDto);
 
@@ -188,10 +197,10 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('User not found');
     }
-  
+
     const resetToken = this.jwtService.sign({ email }, { expiresIn: '1h' });
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-  
+
     try {
       await this.mailService.sendMail(
         email,
@@ -201,22 +210,22 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException('Failed to send reset email');
     }
-  
+
     return { message: 'Reset password email sent' };
   }
 
     async resetPassword(token: string, newPassword: string) {
     try {
       const decoded = this.jwtService.verify(token);
-  
+
       const user = await this.userService.findByEmail(decoded.email);
       if (!user) {
         throw new BadRequestException('Invalid token or user not found');
       }
-  
+
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userService.updatePassword(user._id.toString(), hashedPassword);
-  
+
       return { message: 'Password successfully reset' };
     } catch (error) {
       throw new BadRequestException('Invalid or expired token');
@@ -224,5 +233,5 @@ export class AuthService {
   }
 
 
-  
+
 }

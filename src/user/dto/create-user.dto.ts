@@ -21,12 +21,26 @@ export class CreateUserDto {
   @MinLength(6)
   readonly password: string;
 
-
   @IsOptional()
   @IsString()
   readonly address?: string;
 
-  @IsNotEmpty()
+  // Campos específicos para tiendas
+  @IsOptional()
+  @IsString()
+  @Length(2, 100)
+  readonly store_name?: string;
+
+  @IsOptional()
+  @IsString()
+  readonly store_address?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(5, 20)
+  readonly store_phone?: string;
+
+  @IsOptional()
   @IsEnum(AccountType)
-  readonly account_type: AccountType;
+  readonly account_type?: AccountType;
 }
