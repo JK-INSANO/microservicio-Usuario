@@ -1,98 +1,245 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Microservicio de Usuarios
 
-## Description
+Este proyecto es un microservicio de gestión de usuarios desarrollado con NestJS y MongoDB. Proporciona funcionalidades para registro, autenticación y gestión de diferentes tipos de usuarios (clientes, tiendas y repartidores).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requisitos previos
 
-## Project setup
+Antes de comenzar, asegúrate de tener instalado:
+
+- [Node.js](https://nodejs.org/) (v18 o superior)
+- [MongoDB](https://www.mongodb.com/try/download/community) (v6.0 o superior)
+- [npm](https://www.npmjs.com/) (normalmente viene con Node.js)
+
+## Configuración del proyecto (PASOS A SEGUIR)
+
+### 1. Clonar el repositorio
+
+```bash
+$ git clone <url-del-repositorio>
+$ cd <nombre-del-directorio>
+```
+
+### 2. Instalar dependencias
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+### 3. Configurar MongoDB
+
+Asegúrate de tener MongoDB instalado y en ejecución en tu sistema.
+
+Para instalar MongoDB:
+- **Windows**: Descarga e instala desde [mongodb.com](https://www.mongodb.com/try/download/community)
+- **macOS**: `brew install mongodb-community`
+- **Linux (Ubuntu)**: 
+  ```bash
+  sudo apt update
+  sudo apt install -y mongodb
+  sudo systemctl start mongodb
+  ```
+
+Verifica que MongoDB esté funcionando:
+```bash
+$ mongosh
+```
+
+### 4. Configuración de la base de datos
+
+El proyecto está configurado para conectarse a MongoDB en localhost:27017 con la base de datos "DbWeb".
+
+Si necesitas cambiar esta configuración, modifica los siguientes valores en el archivo `src/app.module.ts`:
+
+```typescript
+MongooseModule.forRoot(`mongodb://localhost:27017/DbWeb`)
+```
+
+## Ejecutar el proyecto
+
+### Desarrollo
 
 ```bash
-# development
+# Modo de desarrollo
 $ npm run start
 
-# watch mode
+# Modo de desarrollo con recarga automática
 $ npm run start:dev
+```
 
-# production mode
+### Producción
+
+```bash
+# Compilar el proyecto
+$ npm run build
+
+# Ejecutar en modo producción
 $ npm run start:prod
 ```
 
-## Run tests
+## Estructura del proyecto
+
+- `src/auth`: Módulo de autenticación y autorización
+- `src/user`: Módulo de gestión de usuarios
+- `src/mail`: Módulo para envío de correos electrónicos
+
+## API Endpoints
+
+### Autenticación
+
+- `POST /api/auth/register`: Registrar un nuevo usuario
+- `POST /api/auth/login`: Iniciar sesión
+- `POST /api/auth/refresh`: Renovar token de acceso
+- `POST /api/auth/logout`: Cerrar sesión
+
+### Usuarios
+
+- `GET /api/users`: Obtener todos los usuarios
+- `GET /api/users/:id`: Obtener un usuario por ID
+- `GET /api/users/customers`: Obtener todos los clientes
+- `GET /api/users/stores`: Obtener todas las tiendas
+- `GET /api/users/delivery`: Obtener todos los repartidores
+- `GET /api/users/stats`: Obtener estadísticas de usuarios
+
+
+## Tipos de usuarios
+
+El sistema maneja cuatro tipos de usuarios:
+
+1. **Clientes (usuario)**: Usuarios normales que realizan pedidos
+2. **Tiendas (tienda)**: Comercios que ofrecen productos
+3. **Repartidores (delivery)**: Encargados de entregar pedidos
+4. **Administradores (admin)**: Gestores del sistema
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+# Plataforma de Comercio Electrónico - Arquitectura de Microservicios (RESUMEN TODO EL PROYECTO)
+
+## Descripción General
+
+Este proyecto implementa una plataforma completa de comercio electrónico utilizando una arquitectura de microservicios. Cada componente está diseñado para funcionar de manera independiente, permitiendo escalabilidad, mantenimiento y desarrollo más eficientes.
+
+## Arquitectura
+
+![Arquitectura de Microservicios]
+
+### Componentes Principales
+
+| Servicio | Puerto | Descripción |
+|----------|--------|-------------|
+| Frontend (Next.js) | 3000 | Interfaz de usuario para clientes y tiendas |
+| Microservicio de Usuarios | 3001 | Gestión de usuarios, autenticación y perfiles |
+| Microservicio de Tienda | 3002 | Gestión de productos, pedidos y tiendas |
+
+## Tecnologías Utilizadas
+
+- **Frontend**: Next.js, React, TypeScript
+- **Backend**: NestJS, TypeScript
+- **Base de Datos**: MongoDB
+- **Autenticación**: JWT
+- **Comunicación**: REST API, TCP (microservicios)
+- **Documentación API**: Swagger
+- **Contenedores**: Docker (opcional)
+
+## Microservicios
+
+### 1. Frontend (insane)
+
+Aplicación web construida con Next.js que proporciona la interfaz de usuario para todos los tipos de usuarios.
 
 ```bash
-# unit tests
-$ npm run test
+# Instalación
+cd insane
+npm install
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Ejecución
+npm run dev
 ```
 
-## Deployment
+**Características principales:**
+- Catálogo de productos
+- Carrito de compras
+- Gestión de pedidos
+- Panel de administración para tiendas
+- Autenticación de usuarios
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 2. Microservicio de Usuarios (microservicio-Usuario)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Gestiona la autenticación, registro y perfiles de usuarios.
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Instalación
+cd microservicio-Usuario
+npm install
+
+
+# Ejecución
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Características principales:**
+- Registro y autenticación de usuarios
+- Gestión de perfiles
+- Roles y permisos
+- Recuperación de contraseña
+- Comunicación por microservicios (TCP puerto 3001)
 
-## Resources
+### 3. Microservicio de Tienda (store-microservice-f)
 
-Check out a few resources that may come in handy when working with NestJS:
+Gestiona productos, pedidos, proveedores y reseñas.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+# Instalación
+cd store-microservice-f
+npm install
 
-## Support
+# Ejecución
+npm run dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Características principales:**
+- Gestión de productos
+- Procesamiento de pedidos
+- Gestión de proveedores
+- Sistema de reseñas
+- Panel de estadísticas
 
-## Stay in touch
+## Configuración de Base de Datos
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Todos los microservicios utilizan MongoDB. Asegúrate de tener MongoDB instalado y ejecutándose
 
-## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+La base de datos predeterminada es `DbWeb` y se ejecuta en `localhost:27017`.
+
+## Flujo de Comunicación
+
+1. El cliente interactúa con el frontend (Next.js)
+2. El frontend se comunica con los microservicios a través de API REST
+3. Los microservicios se comunican entre sí mediante TCP cuando es necesario
+4. Cada microservicio gestiona su propia conexión a la base de datos
+
+## Endpoints Principales
+
+### Microservicio de Usuarios (http://localhost:3000/api)
+- **Autenticación**: `/auth/login`, `/auth/register`
+- **Usuarios**: `/users`, `/users/:id`
+- **Perfiles**: `/users/profile`
+
+### Microservicio de Tienda (http://localhost:3002/api/store)
+- **Productos**: `/products`, `/products/:id`
+- **Pedidos**: `/orders`, `/orders/:id`
+- **Proveedores**: `/suppliers`, `/suppliers/:id`
+- **Reseñas**: `/reviews`, `/reviews/:id`
+- **Dashboard**: `/dashboard`
+
+## Desarrollo
+
+### Requisitos Previos
+- Node.js (v16+)
+- MongoDB
+- npm o yarn
+
+
